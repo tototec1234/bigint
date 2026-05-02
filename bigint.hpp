@@ -7,47 +7,39 @@
 
 class bigint {
 private:
-    std::string value;
-    
-    void remove_leading_zeros();
+    std::string _value;
+
+    void            remove_leading_zeros();
 
 public:
-    // Constructors
-    bigint() : value("0") {}
+    bigint();
     bigint(unsigned long num);
-    bigint(const bigint& other) : value(other.value) {}
-    
-    // Assignment operator
-    bigint& operator=(const bigint& other) {
-        if (this != &other)
-            value = other.value;
-        return *this;
-    }
+    bigint(const bigint& other);
+    ~bigint();
 
-    // Arithmetic operators
-    bigint  operator+(const bigint& other) const;
-    bigint& operator+=(const bigint& other);
+    bigint&         operator=(const bigint& other);
 
-    // Digit shift operators (base 10)
-    bigint  operator<<(size_t shift) const;
-    bigint& operator<<=(size_t shift);
-    bigint  operator>>(size_t shift) const;
-    bigint& operator>>=(size_t shift);
+    std::string     str() const;
 
-    // Comparison operators
-    bool operator<(const bigint& other) const;
-    bool operator>(const bigint& other) const;
-    bool operator<=(const bigint& other) const;
-    bool operator>=(const bigint& other) const;
-    bool operator==(const bigint& other) const;
-    bool operator!=(const bigint& other) const;
+    bigint          operator+(const bigint& other) const;
+    bigint&         operator+=(const bigint& other);
 
-    // Increment operators
-    bigint& operator++();
-    bigint  operator++(int);
+    bigint          operator<<(size_t shift) const;
+    bigint&         operator<<=(size_t shift);
+    bigint          operator>>(size_t shift) const;
+    bigint&         operator>>=(size_t shift);
 
-    // Output operator (no leading zeros)
-    friend std::ostream& operator<<(std::ostream& os, const bigint& num);
+    bool            operator<(const bigint& other) const;
+    bool            operator>(const bigint& other) const;
+    bool            operator<=(const bigint& other) const;
+    bool            operator>=(const bigint& other) const;
+    bool            operator==(const bigint& other) const;
+    bool            operator!=(const bigint& other) const;
+
+    bigint&         operator++();
+    bigint          operator++(int);
 };
+
+std::ostream&   operator<<(std::ostream& os, const bigint& num);
 
 #endif // BIGINT_HPP

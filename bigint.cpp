@@ -1,62 +1,84 @@
 #include "bigint.hpp"
-#include <algorithm>
 #include <sstream>
 
-// Constructor from unsigned long
+// Constructors / Destructor
+bigint::bigint() : _value("0") {}
+
 bigint::bigint(unsigned long num) {
     std::ostringstream oss;
     oss << num;
-    value = oss.str();
+    _value = oss.str();
+}
+
+bigint::bigint(const bigint& other) : _value(other._value) {}
+
+bigint::~bigint() {}
+
+// Assignment operator
+bigint& bigint::operator=(const bigint& other) {
+    if (this != &other)
+        _value = other._value;
+    return *this;
+}
+
+// Public accessor
+std::string bigint::str() const {
+    return _value;
 }
 
 // Remove leading zeros
 void bigint::remove_leading_zeros() {
-    size_t start = value.find_first_not_of('0');
-    if (start == std::string::npos) {
-        value = "0";
-    } else {
-        value = value.substr(start);
-    }
+    size_t start = _value.find_first_not_of('0');
+    if (start == std::string::npos)
+        _value = "0";
+    else
+        _value = _value.substr(start);
 }
 
 // Addition operator
 bigint bigint::operator+(const bigint& other) const {
     std::string result;
     int carry = 0;
-    
-    int i = value.length() - 1;
-    int j = other.value.length() - 1;
-    
+
+    int i = _value.length() - 1;
+    int j = other._value.length() - 1;
+
     while (i >= 0 || j >= 0 || carry) {
         int sum = carry;
-        if (i >= 0) sum += value[i--] - '0';
-        if (j >= 0) sum += other.value[j--] - '0';
-        
+        if (i >= 0) sum += _value[i--] - '0';
+        if (j >= 0) sum += other._value[j--] - '0';
         result.push_back((sum % 10) + '0');
         carry = sum / 10;
     }
-    
-    std::reverse(result.begin(), result.end());
+
+    // reverse manually (std::reverse from <algorithm> is forbidden)
+    int left = 0;
+    int right = (int)result.length() - 1;
+    while (left < right) {
+        char tmp = result[left];
+        result[left++] = result[right];
+        result[right--] = tmp;
+    }
+
     bigint ret;
-    ret.value = result;
+    ret._value = result;
     return ret;
 }
 
 // Left shift (multiply by 10^shift)
 bigint bigint::operator<<(size_t shift) const {
     bigint ret;
-    ret.value = value;
-    ret.value.append(shift, '0');
+    ret._value = _value;
+    ret._value.append(shift, '0');
     return ret;
 }
 
 // Right shift (divide by 10^shift)
 bigint bigint::operator>>(size_t shift) const {
-    if (shift >= value.length()) {
-        return bigint(0);
-    }
+    if (shift >= _value.length())
+        return bigint(0UL);
     bigint ret;
-    ret.value = value.substr(0, value.length() - shift);
+    ret._value = _value.substr(0, _value.length() - shift);
     return ret;
 }
 
@@ -67,34 +89,34 @@ bigint& bigint::operator+=(const bigint& other) {
 }
 
 bigint& bigint::operator<<=(size_t shift) {
-    value.append(shift, '0');
+    _value.append(shift, '0');
     return *this;
 }
 
 bigint& bigint::operator>>=(size_t shift) {
-    if (shift >= value.length())
-        value = "0";
+    if (shift >= _value.length())
+        _value = "0";
     else
-        value = value.substr(0, value.length() - shift);
+        _value = _value.substr(0, _value.length() - shift);
     return *this;
 }
 
 // Comparison operators
 bool bigint::operator<(const bigint& other) const {
-    if (value.length() != other.value.length())
-        return value.length() < other.value.length();
-    return value < other.value;
+    if (_value.length() != other._value.length())
+        return _value.length() < other._value.length();
+    return _value < other._value;
 }
 
-bool bigint::operator>(const bigint& other) const { return other < *this; }
+bool bigint::operator>(const bigint& other) const  { return other < *this; }
 bool bigint::operator<=(const bigint& other) const { return !(other < *this); }
 bool bigint::operator>=(const bigint& other) const { return !(*this < other); }
-bool bigint::operator==(const bigint& other) const { return value == other.value; }
+bool bigint::operator==(const bigint& other) const { return _value == other._value; }
 bool bigint::operator!=(const bigint& other) const { return !(*this == other); }
 
 // Increment operators
 bigint& bigint::operator++() {
-    *this += bigint(1);
+    *this += bigint(1UL);
     return *this;
 }
 
@@ -104,12 +126,12 @@ bigint bigint::operator++(int) {
     return temp;
 }
 
-// Output operator
+// Output operator (non-friend non-member)
 std::ostream& operator<<(std::ostream& os, const bigint& num) {
-    os << num.value;
+    os << num.str();
     return os;
 }
 
 /*
-c++ -Werror -Wextra -Wall -std=c++98 *.cpp *.hpp
+c++ -Werror -Wextra -Wall -std=c++98 -pedantic-errors *.cpp *.hpp
 */
