@@ -1,5 +1,29 @@
 #include "bigint.hpp"
 
+// 修正前(stoull使用時)にオーバーフロー/例外が発生するケースを検証する関数
+// ULLONG_MAX = 18446744073709551615 (20桁) を超える演算はstoullで壊れる
+void	test_overflow_cases(void)
+{
+	std::cout << "=== Large number tests (would overflow with old stoull) ===" << std::endl;
+
+	// operator+: ULLONG_MAX + 1 → 18446744073709551616 (stoullでオーバーフロー)
+	bigint	a(18446744073709551615ULL);
+	bigint	b(1ULL);
+	std::cout << "ULLONG_MAX         = " << a << std::endl;
+	std::cout << "ULLONG_MAX + 1     = " << (a + b) << std::endl; // 期待値: 18446744073709551616
+
+	// operator+: 巨大数同士の加算
+	std::cout << "ULLONG_MAX * 2     = " << (a + a) << std::endl; // 期待値: 36893488147419103230
+
+	// operator<<: 1を25桁シフト → 26桁の数 (stoullでオーバーフロー)
+	bigint	c(1ULL);
+	std::cout << "1 << 25 (digits)   = " << (c << 25) << std::endl; // 期待値: 1 + 25個の0
+
+	// operator>>: 巨大数に右シフト (stoullに渡す前段階で大きい文字列が生まれる)
+	bigint	d = a + a; // 36893488147419103230
+	std::cout << "(ULLONG_MAX*2) >> 5 = " << (d >> 5) << std::endl; // 期待値: 368934881474191
+}
+
 // clear && c++ -g main.cpp bigint.cpp bigint.hpp && valgrind --leak-check=full --show-leak-kinds=all ./a.out
 int	main(void)
 {
@@ -46,5 +70,7 @@ int	main(void)
 		std::cout << "\"(x << 2)\"--> " << (x << 2) << "\n";   // prints 123400
 		std::cout << "\"(x >>= 2)\"--> " << (x >>= 2) << "\n";   // prints   12}
 	}
+	std::cout << "\n\n" << std::endl;
+	test_overflow_cases();
 	return (0);
 } 

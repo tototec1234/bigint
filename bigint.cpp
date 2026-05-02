@@ -29,14 +29,17 @@ bigint bigint::operator+(const bigint& other) const {
     }
     
     std::reverse(result.begin(), result.end());
-    return bigint(std::stoull(result));
+    bigint ret;
+    ret.value = result;
+    return ret;
 }
 
 // Left shift (multiply by 10^shift)
 bigint bigint::operator<<(size_t shift) const {
-    std::string result = value;
-    result.append(shift, '0');
-    return bigint(std::stoull(result));
+    bigint ret;
+    ret.value = value;
+    ret.value.append(shift, '0');
+    return ret;
 }
 
 // Right shift (divide by 10^shift)
@@ -44,6 +47,7 @@ bigint bigint::operator>>(size_t shift) const {
     if (shift >= value.length()) {
         return bigint(0);
     }
-    std::string result = value.substr(0, value.length() - shift);
-    return bigint(std::stoull(result));
+    bigint ret;
+    ret.value = value.substr(0, value.length() - shift);
+    return ret;
 } 
