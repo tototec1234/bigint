@@ -1,5 +1,13 @@
 #include "bigint.hpp"
 #include <algorithm>
+#include <sstream>
+
+// Constructor from unsigned long
+bigint::bigint(unsigned long num) {
+    std::ostringstream oss;
+    oss << num;
+    value = oss.str();
+}
 
 // Remove leading zeros
 void bigint::remove_leading_zeros() {
@@ -100,4 +108,4 @@ bigint bigint::operator++(int) {
 std::ostream& operator<<(std::ostream& os, const bigint& num) {
     os << num.value;
     return os;
-} 
+}

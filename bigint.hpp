@@ -2,6 +2,7 @@
 #define BIGINT_HPP
 
 #include <iostream>
+#include <sstream>
 #include <string>
 
 class bigint {
@@ -13,7 +14,7 @@ private:
 public:
     // Constructors
     bigint() : value("0") {}
-    bigint(unsigned long long num) : value(std::to_string(num)) {}
+    bigint(unsigned long num);
     bigint(const bigint& other) : value(other.value) {}
     
     // Assignment operator
@@ -49,4 +50,4 @@ public:
     friend std::ostream& operator<<(std::ostream& os, const bigint& num);
 };
 
-#endif // BIGINT_HPP 
+#endif // BIGINT_HPP
