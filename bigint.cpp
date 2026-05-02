@@ -109,3 +109,7 @@ std::ostream& operator<<(std::ostream& os, const bigint& num) {
     os << num.value;
     return os;
 }
+
+/*
+c++ -Werror -Wextra -Wall -std=c++98 *.cpp *.hpp
+*/
