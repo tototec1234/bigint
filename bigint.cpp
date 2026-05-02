@@ -50,4 +50,54 @@ bigint bigint::operator>>(size_t shift) const {
     bigint ret;
     ret.value = value.substr(0, value.length() - shift);
     return ret;
+}
+
+// Compound assignment operators
+bigint& bigint::operator+=(const bigint& other) {
+    *this = *this + other;
+    return *this;
+}
+
+bigint& bigint::operator<<=(size_t shift) {
+    value.append(shift, '0');
+    return *this;
+}
+
+bigint& bigint::operator>>=(size_t shift) {
+    if (shift >= value.length())
+        value = "0";
+    else
+        value = value.substr(0, value.length() - shift);
+    return *this;
+}
+
+// Comparison operators
+bool bigint::operator<(const bigint& other) const {
+    if (value.length() != other.value.length())
+        return value.length() < other.value.length();
+    return value < other.value;
+}
+
+bool bigint::operator>(const bigint& other) const { return other < *this; }
+bool bigint::operator<=(const bigint& other) const { return !(other < *this); }
+bool bigint::operator>=(const bigint& other) const { return !(*this < other); }
+bool bigint::operator==(const bigint& other) const { return value == other.value; }
+bool bigint::operator!=(const bigint& other) const { return !(*this == other); }
+
+// Increment operators
+bigint& bigint::operator++() {
+    *this += bigint(1);
+    return *this;
+}
+
+bigint bigint::operator++(int) {
+    bigint temp = *this;
+    ++(*this);
+    return temp;
+}
+
+// Output operator
+std::ostream& operator<<(std::ostream& os, const bigint& num) {
+    os << num.value;
+    return os;
 } 
